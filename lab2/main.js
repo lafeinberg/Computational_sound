@@ -81,9 +81,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     window.addEventListener('keydown', keyDown, false);
     window.addEventListener('keyup', keyUp, false);
-
-
-
     var compressor = audioCtx.createDynamicsCompressor();
     compressor.threshold.setValueAtTime(-50, audioCtx.currentTime);
 
@@ -117,20 +114,22 @@ document.addEventListener("DOMContentLoaded", function (event) {
         activeGains[key].forEach(function (currGain) {
             currGain.gain.cancelScheduledValues(audioCtx.currentTime);
             currGain.gain.setValueAtTime(currGain.gain.value, audioCtx.currentTime);
-            currGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+            currGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.025);
         });
         setTimeout(function () {
-            activeGains[key].forEach(function (currGain) {
-                currGain.gain.setValueAtTime(0, audioCtx.currentTime);
-            });
 
-            activeOsc[key].forEach(function (currOsc) {
-                currOsc.stop();
-            });
+            //STOP ALL THE GAINS
+            for (let i = 0; i < activeGains[key].length; i++) {
+                activeGains[key][i].gain.value = 0;
+            }
 
+            //STOP ALL THE OSCILLARTORS
+            for (let i = 0; i < activeOsc[key].length; i++) {
+                activeOsc[key][i].stop();
+            }
             delete activeGains[key];
             delete activeOsc[key];
-        }, 1000 * 0.1);
+        }, 50);
     }
 
 
@@ -147,9 +146,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
         globalGain.gain.setValueAtTime(0, audioCtx.currentTime)
 
         globalGain.connect(audioCtx.destination);
-        globalGain.gain.setTargetAtTime(0.3, audioCtx.currentTime, 0.02);
+        globalGain.gain.setTargetAtTime(0.3, audioCtx.currentTime, 0.015);
 
-        currFrequency = keyboardFrequencyMap[key];
+        var currFrequency = keyboardFrequencyMap[key];
 
         osc.frequency.value = currFrequency
         osc.start()
@@ -159,11 +158,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
 
         for (i = 0; i < currentNumPartials; i += 1) {
-            if (i > currentNumPartials / 2) {
+            if (i % 2  === 0) {
                 currFrequency = (currFrequency * (i + 1)) + Math.random() * 15
             }
             else {
-                currFrequency = (currFrequency * (i - 1)) + Math.random() * 15
+                currFrequency = (currFrequency * (i + 1)) - Math.random() * 15
             }
             //LUCI
             //freq = freq * 2.01
@@ -179,22 +178,22 @@ document.addEventListener("DOMContentLoaded", function (event) {
         activeGains[key] = [globalGain]
 
         if (lfo === true) {
+            console.log("Inside lfo");
             var lfoOsc = audioCtx.createOscillator();
-            lfoOsc.frequency.value = lfoFreq;
-            lfoOsc.connect(globalGain);
+            lfoOsc.frequency.setValueAtTime(lfoFreq, audioCtx.currentTime)
+            lfoOsc.connect(globalGain).connect(osc.frequency);
             activeOsc[key].push(lfoOsc);
             lfoOsc.start()
         }
 
+        var currGainLength = activeGains[key].length 
         Object.keys(activeGains).forEach((key) => {
-            for (var i = 0; i < activeGains[key].length; i++) {
-                activeGains[key][i].gain.setTargetAtTime(0.4 / (Object.keys(activeGains).length + (currOscs.length * Object.keys(activeGains).length)), audioCtx.currentTime, 0.2)
+            for (var i = 0; i < currGainLength; i++) {
+                activeGains[key][i].gain.setTargetAtTime(0.5 / (Object.keys(activeGains).length + (currOscs.length * Object.keys(activeGains).length)), audioCtx.currentTime, 0.2)
             }
         })
 
     }
-
-
 
 
 
@@ -227,19 +226,18 @@ document.addEventListener("DOMContentLoaded", function (event) {
         if (lfo === true) {
             var lfoOsc = audioCtx.createOscillator();
             lfoOsc.frequency.setValueAtTime(lfoFreq, audioCtx.currentTime)
-            lfoOsc.connect(modulated);
+            lfoOsc.connect(modulated).connect(modFrequency.frequency);
             activeOsc[key].push(lfoOsc);
             lfoOsc.start()
         }
 
         Object.keys(activeGains).forEach((key) => {
             for (var i = 0; i < activeGains[key].length; i++) {
-                activeGains[key][i].gain.setTargetAtTime(0.4 / (Object.keys(activeGains).length + (activeOsc[key].length * Object.keys(activeGains).length)), audioCtx.currentTime, 0.2)
+                activeGains[key][i].gain.setTargetAtTime(0.5 / (Object.keys(activeGains).length + (activeOsc[key].length * Object.keys(activeGains).length)), audioCtx.currentTime, 0.2)
             }
         })
 
     }
-
 
 
 
@@ -277,7 +275,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
             lfoOsc.frequency.setValueAtTime(lfoFreq, audioCtx.currentTime)
             lfoOsc.connect(lfoGain).connect(modFrequency.frequency);
             activeOsc[key].push(lfoOsc);
-            activeGain[key].push(lfoGain);
+            activeGains[key].push(lfoGain);
             lfoOsc.start();
         }
 
@@ -310,11 +308,11 @@ function changeLFO() {
         lfoContent.style.display = 'block';
     }
 }
+function updateLFO(val) {
+    lfoFreq = val;
+}
 
 function changePartials() {
     currentNumPartials = document.getElementById("partials").value
 }
 
-function updateLFO(val) {
-    lfoFreq = val;
-}
