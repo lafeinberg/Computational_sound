@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lab 2</title>
+
+    <style>
+
+        input[type="radio"] {
+            vertical-align: middle;
+        }
+
+        #lfo {
+            background-color: red
+        }
+
+        .slider{
+
+            width: 50%; /* Set the width of the slider thumb */
+            height: 5px; /* Set the height of the slider thumb */
+            background-color: black; /* Set the color of the slider thumb */
+            border: none; /* Remove default border */
+            -webkit-appearance: none; /* Remove default styling */
+        }
+
+    </style>
+</head>
+
+
+<body>
+    <h1>Lab 2</h1>
+    <p>Choose type of synthesis: </p>
+    <div class="radio_buttons">
+        <form id="synth_mode">
+            <input type="radio" id="add" name="synth" value="add" checked="checked">
+            <label for="add">Additive</label>
+            <input type="radio" id="am" name="synth" value="am">
+            <label for="am">AM</label>
+            <input type="radio" id="fm" name="synth" value="fm">
+            <label for="fm">FM</label>
+        </form>
+    </div><br>
+
+    <p>LFO</p>
+    <div>
+        <button id="lfo" onclick="changeLFO()">OFF</button>
+    </div><br>
+
+    <div id="lfoContent" style="display:none;">
+        <input id="lfoSlider" class="slider" type="range" min=1 max=20 oninput="updateLFO(this.value)" onchange="updateLFO(this.value)"> </input>LFO Frequency <br>
+    </div>
+
+
+
+    
+    <div id="additiveContent" style="display:block;">
+        <p>Adjust partials for additive synthesis: </p>
+        <select name="partials" id="partials" onchange="changePartials()">
+            <option value=0>0</option>
+            <option value=1>1</option>
+            <option value=2>2</option>
+            <option value=3>3</option>
+            <option value=4>4</option>
+        </select> Partials
+    </div> <br>
+
+ 
+    <div id="AMFMContent" style="display:none;">
+        <p>Adjust for AM/FM: </p>
+        <p>Modulation frequency</p>
+        <input id="modfreqSlider" class="slider" type="range" min=1 max=1000 oninput="updateModFreq(this.value)" onchange="updateModFreq(this.value)"> </input>
+    </div><br>
+    <div id="FMContent" style="display:none;">
+        <p>Adjust for FM: </p>
+        <p>Modulation index</p>
+        <input id="indexSlider" class="slider" type="range" min=1 max=1000 oninput="updateIndex(this.value)" onchange="updateIndex(this.value)"> </input><br>
+    </div><br>
+
+</body>
+
+<script src="main.js"></script>
+
+
+</html>
