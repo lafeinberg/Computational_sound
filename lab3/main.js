@@ -18,7 +18,271 @@ playBB.addEventListener('click', function () {
 
 }, false);
 
-function brook(){
+const playFire = document.getElementById('fire');
+var audioCtx2;
+
+playFire.addEventListener('click', function () {
+  if (!audioCtx2) {
+    console.log("HERE")
+    fire();
+    return;
+  }
+
+  if (audioCtx2.state === 'suspended') {
+    audioCtx2.resume();
+  }
+
+  if (audioCtx2.state === 'running') {
+    audioCtx2.suspend();
+  }
+
+}, false);
+
+
+// Collaborated with Elifia Muthia, Elvina Wibisono, and Pru Yontrarak
+function fire(){ 
+
+  // HISSING
+
+  audioCtx2 = new AudioContext()
+
+  
+  var bufferSize = 10 * audioCtx2.sampleRate,
+  noiseBuffer = audioCtx2.createBuffer(1, bufferSize, audioCtx2.sampleRate),
+  output = noiseBuffer.getChannelData(0);
+
+  for (let i = 0; i < bufferSize; i++) {
+    output[i] = (Math.random() * 2 - 1) * 0.5;
+  }
+  whiteNoise = audioCtx2.createBufferSource();
+  whiteNoise.buffer = noiseBuffer;
+  whiteNoise.loop = true;
+  whiteNoise.start(0);
+
+  /*
+  audioCtx2 = new AudioContext()
+
+  const gainToOsc = audioCtx2.createOscillator()
+  gainToOsc.type = "triangle"
+  gainToOsc.frequency.value = 0.5
+
+  const asdr = audioCtx2.createOscillator();
+  asdr.type = "sine"; // You can use a sine wave for smooth modulation
+  asdr.frequency.value = 0.2;
+
+  gainToOsc.start()
+  asdr.start()
+
+  const gainNode = audioCtx2.createGain();
+
+  asdr.connect(gainNode.gain);
+  gainToOsc.connect(gainNode)
+
+  const gainForHiss = audioCtx2.createGain();
+  const masterHissGain = audioCtx2.createGain();
+  masterHissGain.gain.value = 0.005
+
+  // white noise
+  var bufferSize = 10 * audioCtx2.sampleRate,
+  noiseBuffer = audioCtx2.createBuffer(1, bufferSize, audioCtx2.sampleRate),
+  output = noiseBuffer.getChannelData(0);
+
+  for (let i = 0; i < bufferSize; i++) {
+    output[i] = (Math.random() * 2 - 1) * 0.5;
+  }
+  whiteNoise = audioCtx2.createBufferSource();
+  whiteNoise.buffer = noiseBuffer;
+  whiteNoise.loop = true;
+  whiteNoise.start(0);
+
+
+  //white noise 2
+  var noiseBuffer2 = audioCtx2.createBuffer(1, bufferSize, audioCtx2.sampleRate),
+  output2 = noiseBuffer2.getChannelData(0);
+
+  for (let i = 0; i < bufferSize; i++) {
+    output2[i] = (Math.random() * 2 - 1) * 0.5;
+  }
+  whiteNoise2 = audioCtx2.createBufferSource();
+  whiteNoise2.buffer = noiseBuffer2;
+  whiteNoise2.loop = true;
+  whiteNoise2.start(0);
+
+  var lop = audioCtx2.createBiquadFilter();
+  lop.type = 'lowpass';
+  lop.frequency.value = 1;
+
+  var hip = audioCtx2.createBiquadFilter();
+  hip.type = 'highpass';
+  hip.frequency.value = 1000;
+
+  whiteNoise.connect(hip).connect(gainForHiss);
+  whiteNoise2.connect(lop).connect(gainForHiss);
+  gainNode.connect(gainForHiss.gain)
+  gainForHiss.connect(masterHissGain).connect(audioCtx2.destination)
+*/
+
+
+  
+
+  /* FLAMES */ 
+  const bpFLAME = audioCtx2.createBiquadFilter()
+  bpFLAME.type = "bandpass"
+  bpFLAME.frequency.value = 5
+  bpFLAME.Q.value = 6
+
+  const hpFLAME = audioCtx2.createBiquadFilter()
+  hpFLAME.type = 'highpass';
+  hpFLAME.frequency.value = 40
+
+  const curveFLAME = audioCtx2.createWaveShaper();
+  var distortion = new Float32Array(2);
+  distortion[0] = -0.9;
+  distortion[1] = 0.9;
+  curveFLAME.curve = distortion;
+
+  const hp2FLAME = audioCtx2.createBiquadFilter()
+  hp2FLAME.type = 'highpass';
+  hp2FLAME.frequency.value = 25
+
+  const gainFLAME = audioCtx2.createGain();
+  gainFLAME.gain.value = 50;
+
+  whiteNoise.connect(bpFLAME)
+              .connect(hpFLAME)
+              .connect(curveFLAME)
+              .connect(hp2FLAME)
+              .connect(gainFLAME)
+              .connect(audioCtx2.destination)
+
+
+
+  //Crackling
+
+  /*
+  let interval = 100; // Initial interval set to 2 seconds (2000 milliseconds)
+  let intervalId;
+
+
+  intervalId = setInterval(createCrack, interval);
+  setTimeout(() => {
+    clearInterval(intervalId);
+
+    interval = interval + 1000; // Set new interval to 5 seconds (5000 milliseconds)
+    console.log(interval)
+    intervalId = setInterval(createCrack, interval)
+
+  }, 100)
+
+  let intervalId2;
+  var interval2 = 1000
+  intervalId2 = setInterval(createCrack, interval2);
+  setTimeout(() => {
+    clearInterval(intervalId2);
+    interval2 = interval2 + 1000; // Set new interval to 5 seconds (5000 milliseconds)
+    console.log(interval2)
+    intervalId2 = setInterval(createCrack, interval2)
+  }, 1000)
+
+  let intervalId4;
+  var interval1 = 500
+  intervalId4 = setInterval(createSmallCrack, interval1);
+  setTimeout(() => {
+    clearInterval(intervalId4);
+    //interval = interval + 1000; // Set new interval to 5 seconds (5000 milliseconds)
+    console.log(interval1)
+    intervalId4 = setInterval(createSmallCrack, interval1)
+  }, 1000)
+
+  let intervalId5;
+  var interval6 = 350
+  intervalId5 = setInterval(createSmallCrack, interval6);
+  setTimeout(() => {
+    clearInterval(intervalId5);
+    //interval = interval + 1000; // Set new interval to 5 seconds (5000 milliseconds)
+    console.log(interval1)
+    intervalId5 = setInterval(createSmallCrack, interval6)
+  }, 1000)
+  */
+  
+}
+
+function createCrack(){ 
+
+  console.log("in createCrack")
+
+  const duration = 0.05; // Duration of the crack sound in second
+  const sampleRate = audioCtx2.sampleRate;
+  const numFrames = duration * sampleRate;
+  const buffer = audioCtx2.createBuffer(1, numFrames, sampleRate);
+  const data = buffer.getChannelData(0);
+
+  // Generate a sharp waveform for the crack sound
+  for (let i = 0; i < numFrames; i++) {
+    data[i] = (Math.random() * 2 - 1) * Math.exp(-i / numFrames * 10);
+  }
+
+  const gainNode = audioCtx2.createGain();
+    
+    // Set a random gain value between 0.1 and 1 to vary the volume
+  gainNode.gain.setValueAtTime(Math.random() * 0.9, audioCtx2.currentTime);
+
+
+  const bufferSource = audioCtx2.createBufferSource();
+  bufferSource.buffer = buffer;
+
+  // Connect the buffer source to the destination (speakers)
+  //bufferSource.connect(audioCtx2.destination);
+
+  bufferSource.connect(gainNode);
+  gainNode.connect(audioCtx2.destination);
+
+  // Start the buffer source
+  bufferSource.start();
+
+  bufferSource.stop(audioCtx2.currentTime+ 1);
+}
+
+function createSmallCrack(){
+
+  console.log("in createCrack")
+
+  const duration = 0.05; // Duration of the crack sound in second
+  const sampleRate = audioCtx2.sampleRate;
+  const numFrames = duration * sampleRate;
+  const buffer = audioCtx2.createBuffer(1, numFrames, sampleRate);
+  const data = buffer.getChannelData(0);
+
+  // Generate a sharp waveform for the crack sound
+  for (let i = 0; i < numFrames; i++) {
+    data[i] = (Math.random() * 2 - 1) * Math.exp(-i / numFrames * 10);
+  }
+
+  const gainNode = audioCtx2.createGain();
+    
+    // Set a random gain value between 0.1 and 1 to vary the volume
+  gainNode.gain.setValueAtTime(Math.random() * 0.025, audioCtx2.currentTime);
+
+
+  const bufferSource = audioCtx2.createBufferSource();
+  bufferSource.buffer = buffer;
+
+  // Connect the buffer source to the destination (speakers)
+  //bufferSource.connect(audioCtx2.destination);
+
+  bufferSource.connect(gainNode);
+  gainNode.connect(audioCtx2.destination);
+
+  // Start the buffer source
+  bufferSource.start();
+
+  bufferSource.stop(audioCtx2.currentTime+ 1);
+}
+
+
+
+
+function brook(){ // Collaborated with Elifia Muthia, Elvina Wibisono, and Pru Yontrarak
     //this first part I worked with Gabrielle D'Agostino and Chang Su Nam
     audioCtx = new AudioContext()
 
@@ -75,205 +339,4 @@ function brook(){
     freqGain.connect(hp.frequency)
     hp.connect(globalGain).connect(audioCtx.destination);
 
-}
-
-
-function wind(){
-  //this first part I worked with Gabrielle D'Agostino and Chang Su Nam
-  audioCtx = new AudioContext()
-
-  //brown noise
-  var bufferSize = 10 * audioCtx.sampleRate,
-  noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate),
-  output = noiseBuffer.getChannelData(0);
-
-  var lastOut = 0;
-  for (var i = 0; i < bufferSize; i++) {
-      var brown = Math.random() * 2 - 1;
-
-      output[i] = (lastOut + (0.02 * brown)) / 1.02;
-      lastOut = output[i];
-      output[i] *= 3.5;
-  }
-
-  brownNoise = audioCtx.createBufferSource();
-  brownNoise.buffer = noiseBuffer;
-  brownNoise.loop = true;
-  brownNoise.start(0);
-
-  // Brown noise creates the whooshing soiunds
-  
-  const biquadFilter = audioCtx.createBiquadFilter()
-  const freq = audioCtx.createBiquadFilter()
-  const brook = audioCtx.createBiquadFilter()
-
-  const globalGain = audioCtx.createGain();
-  globalGain.gain.value = 0.1;
-
-  const freqGain = audioCtx.createGain();
-  freqGain.gain.value = 900; //adds bubblings
-
-
-  biquadFilter.type = 'lowpass'
-  biquadFilter.frequency.setValueAtTime(500, audioCtx.currentTime);
-  biquadFilter.gain.setValueAtTime(0, audioCtx.currentTime);
-
-
-  // lpfB.frequency.setValueAtTime(14, audioCtx.currentTime);
-  // lpfB.gain.value = 400;
-  // const constantSource = audioCtx.createConstantSource();
-  // constantSource.offset.value = 500
-  // constantSource.connect(lpfB)
-  // constantSource.start();
-  // brownNoise.connect(lpfB)
-
-
-  
-  freq.type = 'lowpass'
-  freq.frequency.value = 14;
-  const helper = new ConstantSourceNode(audioCtx, {offset: 1})
-  helper.connect(freq)
-  helper.start()
-  
-  brook.type = 'highpass'
-  brook.Q.value = 1/0.025; // This is the fluctuating sound
-  
-  // globalGain.gain.setValueAtTime(0,audioCtx.currentTime)
-  
-  // helper.connect(brook.gain)
-  // helper.connect(freqGain)
-  // helper.connect(globalGain)
-
-  helper.connect(globalGain.gain)
-  
-  //helper.start()
-
-  //brownNoise.connect(globalGain).connect(audioCtx.destination);
-  brownNoise.connect(biquadFilter).connect(brook)
-  brownNoise.connect(freq).connect(freqGain)
-  freqGain.connect(brook.frequency)
-  //helper.connect(brook.frequency)
-  brook.connect(globalGain).connect(audioCtx.destination);
-
-}
-
-
-
-function popcorn(){
-  //this first part I worked with Gabrielle D'Agostino and Chang Su Nam
-  audioCtx = new AudioContext()
-
-  //brown noise
-  var bufferSize = 10 * audioCtx.sampleRate,
-  noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate),
-  output = noiseBuffer.getChannelData(0);
-
-  var lastOut = 0;
-  for (var i = 0; i < bufferSize; i++) {
-      var brown = Math.random() * 2 - 1;
-
-      output[i] = (lastOut + (0.02 * brown)) / 1.02;
-      lastOut = output[i];
-      output[i] *= 3.5;
-  }
-
-  brownNoise = audioCtx.createBufferSource();
-  brownNoise.buffer = noiseBuffer;
-  brownNoise.loop = true;
-  brownNoise.start(0);
-  
-  const biquadFilter = audioCtx.createBiquadFilter()
-  const freq = audioCtx.createBiquadFilter()
-  const brook = audioCtx.createBiquadFilter()
-
-  const globalGain = audioCtx.createGain();
-  globalGain.gain.value = 0.1;
-
-  const freqGain = audioCtx.createGain();
-  freqGain.gain.value = 900; //adds bubblings
-
-
-  biquadFilter.type = 'lowpass'
-  biquadFilter.frequency.setValueAtTime(500, audioCtx.currentTime);
-  biquadFilter.gain.setValueAtTime(0, audioCtx.currentTime);
-  
-  freq.type = 'lowpass'
-  freq.frequency.value = 500;
-  const helper = new ConstantSourceNode(audioCtx, {offset: 500})
-  
-  brook.type = 'highpass'
-  brook.Q.value = 1/0.025; // This is the fluctuating sound
-  
-  
-  brownNoise.connect(biquadFilter).connect(brook)
-  brownNoise.connect(freq).connect(freqGain)
-  freqGain.connect(brook.frequency)
-  helper.connect(brook.frequency)
-  brook.connect(globalGain).connect(audioCtx.destination);
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-function waterfall(){
-  //this first part I worked with Gabrielle D'Agostino and Chang Su Nam
-  audioCtx = new AudioContext()
-
-  //brown noise
-  var bufferSize = 10 * audioCtx.sampleRate,
-  noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate),
-  output = noiseBuffer.getChannelData(0);
-
-  var lastOut = 0;
-  for (var i = 0; i < bufferSize; i++) {
-      var brown = Math.random() * 2 - 1;
-
-      output[i] = (lastOut + (0.02 * brown)) / 1.02;
-      lastOut = output[i];
-      output[i] *= 3.5;
-  }
-
-  brownNoise = audioCtx.createBufferSource();
-  brownNoise.buffer = noiseBuffer;
-  brownNoise.loop = true;
-  brownNoise.start(0);
-  
-  const biquadFilter = audioCtx.createBiquadFilter()
-  const freq = audioCtx.createBiquadFilter()
-  const brook = audioCtx.createBiquadFilter()
-
-  const globalGain = audioCtx.createGain();
-  globalGain.gain.value = 0.1;
-
-  const freqGain = audioCtx.createGain();
-  freqGain.gain.value = 450;
-
-  biquadFilter.type = 'lowpass'
-  biquadFilter.frequency.setValueAtTime(700, audioCtx.currentTime);
-  biquadFilter.gain.setValueAtTime(0, audioCtx.currentTime);
-  
-  freq.type = 'lowpass'
-  freq.frequency.value = 14;
-  const helper = new ConstantSourceNode(audioCtx, {offset: 500})
-  
-  brook.type = 'highpass'
-  brook.Q.value = 1/0.025; // This is the fluctuating sound
-
-  
-  brownNoise.connect(biquadFilter).connect(brook)
-  brownNoise.connect(freq).connect(freqGain)
-  freqGain.connect(brook.frequency)
-  helper.connect(brook.frequency)
-  brook.connect(globalGain).connect(audioCtx.destination);
 }
