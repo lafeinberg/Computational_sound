@@ -3,7 +3,6 @@ var audioCtx;
 
 playBB.addEventListener('click', function () {
   if (!audioCtx) {
-    console.log("HERE")
     brook();
     return;
   }
@@ -23,19 +22,15 @@ var audioCtx2;
 
 playFire.addEventListener('click', function () {
   if (!audioCtx2) {
-    console.log("HERE")
     fire();
     return;
   }
-
   if (audioCtx2.state === 'suspended') {
     audioCtx2.resume();
   }
-
   if (audioCtx2.state === 'running') {
     audioCtx2.suspend();
   }
-
 }, false);
 
 
