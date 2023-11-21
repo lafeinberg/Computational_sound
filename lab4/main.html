@@ -3,21 +3,37 @@
 
 <head>
   <meta charset="utf‐8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title> Lab 4</title>
-  
-  <style>
-  </style>
-
+  <title> Lab 4 </title>
 </head>
 
 <body>
-    <h1>Lab 4</h1>
-    <h2>Part 1: Additional Feature to Live-Coding Language</h2>
-    <p>To add an additional feature to the live-coding assignment, I decided to add a new feature ...</p>
+  <h1>Lab 4</h1>
+  <h2>Part 1: Live Coding Langugage</h2>
+  <p>This is an almost minimal command-based live coding engine. Press the button to re-evaluate your code.
+    This language allows you to specify a rhythmic pattern of beats by entering a comma and space-separated list of times and pitches. 
+    You can also include javascript computation in the values.
+    As an example:
+  </p>
+  <p>1+1@220, 2@220*2, 1*3@270</p>
 
+  <p>My additional feature allows you to specify repeated patterns within the language. The following changes were made to the existing langauge:  </p>
+  <ol>
+    <li>Comma: instead of just a space separating the notes, we now have commas that separate the main sections of notes</li>
+    <li>Brackets: allow for the user to define a repeated pattern of notes. The value before the brackets defines how many times the pattern repeats, inside the brackets defines the pattern.</li>
+    <li>NOTE: You cannot have nested brackets (ex. 1+1@220, 3[2@220*2 4[1*3@270]])</li>
+  </ol>
+  <p>Note:</p>
+  <ol>
+    <li>You CANNOT have nested brackets (ex. 1+1@220, 3[2@220*2 4[1*3@270]])</li>
+    <li>You do not include commas within the bracketed region (ex. "1@220, 5@300" --> yes comma. "3[1@220 5@300]" --> no comma) </li>
+  </ol>
 
+  <p>Example usage: (e.g. "3@340, 2[1@220 2@330]" plays as "3@340, 1@220, 2@330, 1@220, 2@330")</p>
+  <button>re-evaluate</button>
+  <input type="text" id="code">
 
+  <h2>Part 2: Live Coding Demo</h2>
+  <p>I have used Sonic Pi to create a 10 minute live-coding demo.</p>
 </body>
 <script src="main.js"> </script>
 
